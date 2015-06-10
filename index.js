@@ -3,74 +3,72 @@
 
 var fs = require('fs');
 var path = require('path');
+var Funnel = require('broccoli-funnel');
 
 module.exports = {
   name: 'ember-ma-square',
 
-  preBuild: function() {
-    this.copyComponent();
-    this.copyTemplate();
-    this.copyStyle();
+  treeForApp: function() {
+    var addonName = this.name;
+    var tree = new Funnel(this.contentPath(), {
+      include: ['component.js'],
+      getDestinationPath: function(relativePath) {
+        if (relativePath === 'component.js') {
+          return 'components/' + addonName + '.js';
+        }
+
+        return relativePath;
+      }
+    });
+
+    return tree;
   },
 
-  copyComponent: function() {
-    var componentInput = this.componentInputPath();
-    var componentOutput = this.componentOutputPath();
+  treeForTemplates: function() {
+    var addonName = this.name;
+    var tree = new Funnel(this.contentPath(), {
+      include: ['template.hbs'],
+      getDestinationPath: function(relativePath) {
+        if (relativePath === 'template.hbs') {
+          return 'components/' + addonName + '.hbs';
+        }
 
-    if (fs.existsSync(componentInput)) {
-      console.log('component input exists!');
-      fs.symlinkSync(componentInput, componentOutput);
-      fs.unlinkSync(componentInput);
-    }
+        return relativePath;
+      }
+    });
+
+    return tree;
   },
 
-  copyTemplate: function() {
-    var templateInput = this.templateInputPath();
-    var templateOutput = this.templateOutputPath();
+  treeForStyles: function() {
+    var addonName = this.name;
+    var tree = new Funnel(this.contentPath(), {
+      include: ['style.css'],
+      getDestinationPath: function(relativePath) {
+        if (relativePath === 'style.css') {
+          return 'styles/' + addonName + '.css';
+        }
 
-    if (fs.existsSync(templateInput)) {
-      console.log('component input exists!');
-      fs.symlinkSync(templateInput, templateOutput);
-      fs.unlinkSync(templateInput);
-    }
+        return relativePath;
+      }
+    });
+
+    return this.compileStyles(tree);
   },
 
-  copyStyle: function() {
-    var styleInput = this.styleInputPath();
-    var styleOutput = this.styleOutputPath();
-
-    if (fs.existsSync(styleInput)) {
-      console.log('component input exists!');
-      fs.symlinkSync(styleInput, styleOutput);
-      fs.unlinkSync(styleInput);
-    }
-  },
-
-  tmpDir: function() {
-    return path.join(process.cwd(), 'tmp');
+  contentPath: function() {
+    return 'node_modules/ember-ma-square/content';
   },
 
   componentInputPath: function() {
-    return path.join(this.tmpDir(), 'addon/component.js');
-  },
-
-  componentOutputPath: function() {
-    return path.join(this.tmpDir(), 'app/components/' + this.name + '.js');
+    return path.join(this.contentPath(), 'component.js');
   },
 
   templateInputPath: function() {
-    return path.join(this.tmpDir(), 'addon/template.hbs');
-  },
-
-  templateOutputPath: function() {
-    return path.join(this.tmpDir(), 'app/templates/' + this.name + '.hbs');
+    return path.join(this.contentPath(), 'template.hbs');
   },
 
   styleInputPath: function() {
-    return path.join(this.tmpDir(), 'addon/style.scss');
-  },
-
-  styleOutputPath: function() {
-    return path.join(this.tmpDir(), 'addon/styles/' + this.name + '.scss');
+    return path.join(this.contentPath(), 'style.scss');
   }
 };
