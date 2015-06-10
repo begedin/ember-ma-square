@@ -10,9 +10,10 @@ The root folder of an ember-addon contains the following which we're using:
   * this is where we use hooks to modify the conventions around file structure. It's what enables the micro-addon concept
 * `template.hbs`
   * moved to `/app/templates/components/${addon-name}.hbs` at build time
-* `style.css`
-  * moved to `/app/styles/${addon-name}.css` at build time. App then concats it into `assets/${app-name}.css`
-  * `.css` for now, one of the next steps is to make it support `.scss`, preferably without forcing the parent app to also support `.scss`
+* `style.scss`
+  * compiled to `style.css`
+  * moved to `/addon/styles/${addon-name}.css` at build time. App then concats it into `assets/vendor.css`
+
 
 Unfortunately, it also contains the following project support files:
 
@@ -46,7 +47,5 @@ The first is included in the NPM package, while the second is ignored.
 
 
 # Further steps
-
-* My guess is, we should support `.scss`. There'a relatively simple way to do it, but it involves forcing the parent app to depend upon `broccoli-sass`, which is not ideal. Ideally, the addon's dependencies would handle compiling the `.scss` and then just pass on the `.css` into the parent app.
 
 * While I don't see a major point in moving the addon tests into a flat structure like the other files, there's a decent argument to do that with the `test-support` folder. To explain, everything inside the addon's `test-support` folder gets merged with the parent app's `tests` folder, so it's a place where various test helpers can be placed. However, since a folder structure is expected within the `test-support` folder, I'm not really sure how to flatten it.
