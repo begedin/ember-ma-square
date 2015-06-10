@@ -1,12 +1,52 @@
-# How am I trying to implement a micro-addon
+# Structure
 
-* Right now, there's a `component.js`, `template.hbs` and `style.scss` all in the `addon` folder. The reason I put all of them there is mainly so I can find them more easily, since the root is quite poluted with support files.
-* The `index.js` (addon entry) has hooks - `treeForApp`, `treeForTemplates` and `treeForStyles` which are called when a list of files is neaded by the parent app in each category.
-* The hooks compile properly and provide a correct list of files, however
-  * The `component.js` gets renamed to `addon-name.js`, moved to `app/components` and that part works. The component can then be used as `{{addon-name}}` in the app template and any options withing the component script (such as class name bindings) seem to be working.
-  * The `template.hbs` gets renamed to `addon-name.hbs`, moved to `app/templates`, but that part doesn't seem to work. There's no error, but the template is not loaded when I use it as `{{addon-name}}`, only the component script is applied.
-  * The `style.scss` gets compiled using the built in `Addon.prototype.compileStyles`, but this requires the parent app to depend on `broccoli-sass` so I'm hoping I can change how this works. `style.scss` also gets becomes `addon.css` during the process, which is supposed to be the convention that causes the style to actually get included in the parent app, but it doesn't seem to be working. The documentation surrounding this is poor.
+The root folder of an ember-addon contains the following which we're using:
 
-## In addition
+* `package.json`
+* `bower.json`
+* `component.js`
+  * moved to `/app/components/${addon-name}.js` at build time
+* `index.js`
+  * this is where we use hooks to modify the conventions around file structure. It's what enables the micro-addon concept
+* `template.hbs`
+  * moved to `/app/templates/components/${addon-name}.hbs` at build time
+* `style.css`
+  * moved to `/app/styles/${addon-name}.css` at build time. App then concats it into `assets/${app-name}.css`
+  * `.css` for now, one of the next steps is to make it support `.scss`, preferably without forcing the parent app to also support `.scss`
 
-It's difficult to debug. The majority of stuff I need to figure out here is during addon/app build time, meaning I can't debug in the browser - it's node code.
+Unfortunately, it also contains the following project support files:
+
+* `.bowerrc`
+* `.editorconfig`
+* `.ember-cli`
+* `.gitignore`
+* `.jshintrc`
+* `.npmignore`
+* `.travis.yml`
+
+The files I just listed are mostly ignored via `.npmignore`, so they aren't part of the NPM package. `bower.json` and the `bower_components` folder also aren't part of the NPM package.
+
+The following are project specific:
+
+* `LICENSE.MD`
+* `README.MD`
+* `MICRO_ADDON_CONCEPT.MD`
+
+The following should, in my opinion, not be moved or removed
+
+* `testem.json`
+* `tests` folder - contains test infrastructure including a dummy app to test the addon with. It's used in development only, to run tests on the addon directly, so it's never part of the actual NPM package and has nothing to do with the parent app.
+
+Lastly, there are the folders
+
+* `node_modules`
+* `bower_components`
+
+The first is included in the NPM package, while the second is ignored.
+
+
+# Further steps
+
+* My guess is, we should support `.scss`. There'a relatively simple way to do it, but it involves forcing the parent app to depend upon `broccoli-sass`, which is not ideal. Ideally, the addon's dependencies would handle compiling the `.scss` and then just pass on the `.css` into the parent app.
+
+* While I don't see a major point in moving the addon tests into a flat structure like the other files, there's a decent argument to do that with the `test-support` folder. To explain, everything inside the addon's `test-support` folder gets merged with the parent app's `tests` folder, so it's a place where various test helpers can be placed. However, since a folder structure is expected within the `test-support` folder, I'm not really sure how to flatten it.
