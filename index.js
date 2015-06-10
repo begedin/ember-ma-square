@@ -8,49 +8,39 @@ module.exports = {
   name: 'ember-ma-square',
 
   treeForApp: function() {
-    var addonName = this.name;
-    var tree = new Funnel(this.root, {
-      include: ['component.js', 'style.css'],
-      getDestinationPath: function(relativePath) {
-        if (relativePath === 'component.js') {
-          return path.join('components', addonName + '.js');
-        }
-
-        return relativePath;
-      }
-    });
-
-    return tree;
+    return this.customTree(['component.js']);
   },
 
   treeForTemplates: function() {
-    var addonName = this.name;
-    var tree = new Funnel(this.root, {
-      include: ['template.hbs'],
-      getDestinationPath: function(relativePath) {
-        if (relativePath === 'template.hbs') {
-          return path.join('components', addonName + '.hbs');
-        }
-
-        return relativePath;
-      }
-    });
-
-    return tree;
+    return this.customTree(['template.hbs']);
   },
 
   treeForAddon: function() {
-    var addonName = this.name;
-    var tree = new Funnel(this.root, {
-      include: ['style.css'],
-      getDestinationPath: function(relativePath) {
-        if (relativePath === 'style.css') {
-          return path.join('app/styles', addonName + '.css');
-        }
+    return this.customTree(['style.css']);
+  },
 
+  mapPath: function(relativePath) {
+    var mappedPath;
+
+    if (relativePath === 'component.js') {
+      mappedPath = path.join('components', this.name + '.js');
+    } else if (relativePath === 'template.hbs') {
+      mappedPath = path.join('components', this.name + '.hbs');
+    } else if (relativePath === 'style.css') {
+      mappedPath = path.join('app/styles', this.name + '.css');
+    }
+
+    return mappedPath;
+  },
+
+  customTree: function(included) {
+    var addon = this;
+
+    return new Funnel(this.root, {
+      include: included,
+      getDestinationPath: function(relativePath) {
+        return addon.mapPath(relativePath);
       }
     });
-
-    return tree;
   }
 };
