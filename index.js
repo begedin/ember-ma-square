@@ -7,10 +7,14 @@ var Funnel = require('broccoli-funnel');
 module.exports = {
   name: 'ember-ma-square',
 
+  /*included: function(app) {
+    app.import('vendor/style.css');
+  },*/
+
   treeForApp: function() {
     var addonName = this.name;
     var tree = new Funnel(this.contentPath(), {
-      include: ['component.js'],
+      include: ['component.js', 'style.css'],
       getDestinationPath: function(relativePath) {
         if (relativePath === 'component.js') {
           return 'components/' + addonName + '.js';
@@ -39,23 +43,32 @@ module.exports = {
     return tree;
   },
 
-  treeForStyles: function() {
+  treeForAddon: function() {
     var addonName = this.name;
-    var tree = new Funnel(this.contentPath(), {
+    var tree = new Funnel(this.treeGenerator(this.addonPath()), {
+      srcDir: '/vendor',
+      destDir: '/app/styles',
       include: ['style.css'],
       getDestinationPath: function(relativePath) {
         if (relativePath === 'style.css') {
-          return 'styles/' + addonName + '.css';
+          return addonName + '.css';
         }
 
-        return relativePath;
       }
     });
 
-    return this.compileStyles(tree);
+    return tree;
+  },
+
+  addonPath: function() {
+    return 'node_modules/ember-ma-square'
   },
 
   contentPath: function() {
-    return 'node_modules/ember-ma-square/content';
+    return path.join(this.addonPath(), 'content');
+  },
+
+  vendorPath: function() {
+    return path.join(this.addonPath(), 'vendor');
   }
 };
