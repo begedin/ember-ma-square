@@ -9,7 +9,7 @@ module.exports = {
 
   treeForApp: function() {
     var addonName = this.name;
-    var tree = new Funnel(this.contentPath(), {
+    var tree = new Funnel(this.root, {
       include: ['component.js', 'style.css'],
       getDestinationPath: function(relativePath) {
         if (relativePath === 'component.js') {
@@ -25,7 +25,7 @@ module.exports = {
 
   treeForTemplates: function() {
     var addonName = this.name;
-    var tree = new Funnel(this.contentPath(), {
+    var tree = new Funnel(this.root, {
       include: ['template.hbs'],
       getDestinationPath: function(relativePath) {
         if (relativePath === 'template.hbs') {
@@ -41,7 +41,7 @@ module.exports = {
 
   treeForAddon: function() {
     var addonName = this.name;
-    var tree = new Funnel(this.contentPath(), {
+    var tree = new Funnel(this.root, {
       include: ['style.css'],
       getDestinationPath: function(relativePath) {
         if (relativePath === 'style.css') {
@@ -52,9 +52,5 @@ module.exports = {
     });
 
     return tree;
-  },
-
-  contentPath: function() {
-    return path.join(this.root, 'content');
-  },
+  }
 };
