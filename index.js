@@ -1,7 +1,6 @@
 /* jshint node: true */
 'use strict';
 
-var fs = require('fs');
 var path = require('path');
 var Funnel = require('broccoli-funnel');
 
@@ -58,17 +57,5 @@ module.exports = {
 
   contentPath: function() {
     return 'node_modules/ember-ma-square/content';
-  },
-
-  componentInputPath: function() {
-    return path.join(this.contentPath(), 'component.js');
-  },
-
-  templateInputPath: function() {
-    return path.join(this.contentPath(), 'template.hbs');
-  },
-
-  styleInputPath: function() {
-    return path.join(this.contentPath(), 'style.scss');
   }
 };
