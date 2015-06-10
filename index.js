@@ -33,11 +33,11 @@ module.exports = {
     return mappedPath;
   },
 
-  customTree: function(included) {
-    var addon = this;
+  customTree: function(include) {
 
+    var addon = this;
     return new Funnel(this.root, {
-      include: included,
+      include: include,
       getDestinationPath: function(relativePath) {
         return addon.mapPath(relativePath);
       }
