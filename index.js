@@ -3,44 +3,47 @@
 
 var path = require('path');
 var Funnel = require('broccoli-funnel');
+var compileSass = require('broccoli-sass');
 
 module.exports = {
   name: 'ember-ma-square',
 
   treeForApp: function() {
-    return this.customTree(['component.js']);
+    var addonName = this.name;
+    return new Funnel(this.root, {
+      include: ['component.js'],
+      getDestinationPath: function(relativePath) {
+        if (relativePath === 'component.js') {
+          return path.join('components', addonName + '.js');
+        }
+      }
+    });
   },
 
   treeForTemplates: function() {
-    return this.customTree(['template.hbs']);
+    var addonName = this.name;
+    return new Funnel(this.root, {
+      include: ['template.hbs'],
+      getDestinationPath: function(relativePath) {
+        if (relativePath === 'template.hbs') {
+          return path.join('components', addonName + '.hbs');
+        }
+      }
+    });
   },
 
   treeForAddon: function() {
-    return this.customTree(['style.css']);
-  },
+    var addonName = this.name;
 
-  mapPath: function(relativePath) {
-    var mappedPath;
+    var compiledTree = compileSass([this.root], 'style.scss', 'style.css');
 
-    if (relativePath === 'component.js') {
-      mappedPath = path.join('components', this.name + '.js');
-    } else if (relativePath === 'template.hbs') {
-      mappedPath = path.join('components', this.name + '.hbs');
-    } else if (relativePath === 'style.css') {
-      mappedPath = path.join('app/styles', this.name + '.css');
-    }
-
-    return mappedPath;
-  },
-
-  customTree: function(include) {
-
-    var addon = this;
-    return new Funnel(this.root, {
-      include: include,
+    return new Funnel(compiledTree, {
+      include: ['style.css'],
       getDestinationPath: function(relativePath) {
-        return addon.mapPath(relativePath);
+        if (relativePath === 'style.css') {
+          return path.join('addon/styles', addonName + '.css');
+        }
       }
     });
-  }
+  },
 };
