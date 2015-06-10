@@ -54,11 +54,7 @@ module.exports = {
     return tree;
   },
 
-  addonPath: function() {
-    return 'node_modules/ember-ma-square'
-  },
-
   contentPath: function() {
-    return path.join(this.addonPath(), 'content');
+    return path.join(this.root, 'content');
   },
 };
