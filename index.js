@@ -9,7 +9,7 @@ module.exports = {
   name: 'ember-ma-square',
 
   treeForApp: function() {
-    return this.buildTree(this.root, ['component.js']);
+    return this.buildTree(this.root, ['component.js', 'library.js']);
   },
 
   treeForTemplates: function() {
@@ -35,6 +35,8 @@ module.exports = {
   mapFile: function(relativePath) {
     if (relativePath === 'component.js') {
       return path.join('components', this.name + '.js');
+    } else if (relativePath === 'library.js') {
+      return path.join('lib', this.name + '.js');
     } else if (relativePath === 'template.hbs') {
       return path.join('components', this.name + '.hbs');
     } else if (relativePath === 'style.css') {
