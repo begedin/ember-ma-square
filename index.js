@@ -9,41 +9,45 @@ module.exports = {
   name: 'ember-ma-square',
 
   treeForApp: function() {
-    var addonName = this.name;
+    var addon = this;
     return new Funnel(this.root, {
       include: ['component.js'],
       getDestinationPath: function(relativePath) {
-        if (relativePath === 'component.js') {
-          return path.join('components', addonName + '.js');
-        }
+        return addon.mapFile(relativePath);
       }
     });
   },
 
   treeForTemplates: function() {
-    var addonName = this.name;
+    var addon = this;
     return new Funnel(this.root, {
       include: ['template.hbs'],
       getDestinationPath: function(relativePath) {
-        if (relativePath === 'template.hbs') {
-          return path.join('components', addonName + '.hbs');
-        }
+        return addon.mapFile(relativePath);
       }
     });
   },
 
   treeForAddon: function() {
-    var addonName = this.name;
+    var addon = this;
 
     var compiledTree = compileSass([this.root], 'style.scss', 'style.css');
 
     return new Funnel(compiledTree, {
       include: ['style.css'],
       getDestinationPath: function(relativePath) {
-        if (relativePath === 'style.css') {
-          return path.join('addon/styles', addonName + '.css');
-        }
+        return addon.mapFile(relativePath);
       }
     });
   },
+
+  mapFile: function(relativePath) {
+    if (relativePath === 'component.js') {
+      return path.join('components', this.name + '.js');
+    } else if (relativePath === 'template.hbs') {
+      return path.join('components', this.name + '.hbs');
+    } else if (relativePath === 'style.css') {
+      return path.join('addon/styles', this.name + '.css');
+    }
+  }
 };
