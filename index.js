@@ -9,32 +9,23 @@ module.exports = {
   name: 'ember-ma-square',
 
   treeForApp: function() {
-    var addon = this;
-    return new Funnel(this.root, {
-      include: ['component.js'],
-      getDestinationPath: function(relativePath) {
-        return addon.mapFile(relativePath);
-      }
-    });
+    return this.buildTree(this.root, ['component.js']);
   },
 
   treeForTemplates: function() {
-    var addon = this;
-    return new Funnel(this.root, {
-      include: ['template.hbs'],
-      getDestinationPath: function(relativePath) {
-        return addon.mapFile(relativePath);
-      }
-    });
+    return this.buildTree(this.root, ['template.hbs']);
   },
 
   treeForAddon: function() {
+    var cssTree = compileSass([this.root], 'style.scss', 'style.css');
+    return this.buildTree(cssTree, ['style.css']);
+  },
+
+  buildTree: function(sourceTree, includedFiles) {
     var addon = this;
 
-    var compiledTree = compileSass([this.root], 'style.scss', 'style.css');
-
-    return new Funnel(compiledTree, {
-      include: ['style.css'],
+    return new Funnel(sourceTree, {
+      include: includedFiles,
       getDestinationPath: function(relativePath) {
         return addon.mapFile(relativePath);
       }
